@@ -10,6 +10,16 @@ public class User {
     private String emailAddress;
     private Date dateOfBirth;
 
+    public User(){}
+
+    public User(int id, String firstName, String lastName, String emailAddress, Date dateOfBirth) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.emailAddress = emailAddress;
+        this.dateOfBirth = dateOfBirth;
+    }
+
     public int getId() {
         return id;
     }

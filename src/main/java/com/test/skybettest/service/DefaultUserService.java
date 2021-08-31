@@ -30,7 +30,7 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User findUserById(int id) {
-        User user = new User();
+        User user;
         try {
             user = userProvider.findUserById(id);
         } catch (UserNotFoundException unfe) {
@@ -51,7 +51,6 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void deleteUserById(int id) {
-        User user = new User();
         try {
             userProvider.deleteUserById(id);
         } catch (UserNotFoundException unfe) {

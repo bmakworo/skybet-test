@@ -1,6 +1,5 @@
 package com.test.skybettest.provider;
 
-import com.test.skybettest.Exception.UserNotFoundException;
 import com.test.skybettest.model.User;
 import org.springframework.stereotype.Component;
 

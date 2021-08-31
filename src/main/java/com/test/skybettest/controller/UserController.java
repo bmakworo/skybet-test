@@ -2,6 +2,7 @@ package com.test.skybettest.controller;
 
 import com.test.skybettest.model.User;
 import com.test.skybettest.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,6 +12,7 @@ public class UserController {
 
     private final UserService userService;
 
+    @Autowired
     UserController(UserService userService) {
         this.userService = userService;
     }

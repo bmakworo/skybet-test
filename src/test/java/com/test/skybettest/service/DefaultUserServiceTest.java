@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.Date;
 import java.time.LocalDate;
@@ -26,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class DefaultUserServiceTest {
 
     @Mock
@@ -81,22 +78,20 @@ class DefaultUserServiceTest {
 
     @Test
     void shouldReturn404ForMissingIdForFindUserByIdValidRequest() {
-//        User user = new User(4,
-//                "userFirstName",
-//                "userLastName",
-//                "userEmailAddress",
-//                randomDateOfBirthGenerator());
-//
-//        int userId = user.getId();
-//        when(userProviderMock.findUserById(userId)).thenReturn(user);
+        User user = new User(4,
+                "userFirstName",
+                "userLastName",
+                "userEmailAddress",
+                randomDateOfBirthGenerator());
+
         UserNotFoundException thrown = assertThrows(
                 UserNotFoundException.class,
                 () -> defaultUserService.findUserById(6),
                 "Message"
         );
 
-        assertTrue(thrown.getMessage().contains("No data found"));
-//        verify(userProviderMock, times(1)).findUserById(userId);
+        assertTrue(thrown.getMessage().contains("Could not find user 6"));
+        verify(userProviderMock, times(1)).findUserById(6);
     }
 
     @Test
@@ -119,11 +114,27 @@ class DefaultUserServiceTest {
     }
 
     @Test
-    void updateUser() {
+    void shouldUpdateUserForValidRequest() {
+        List<User> userList = createUsers();
+        User userUpdate = new User(21,
+                "userUpdateFirstName",
+                "userUpdateLastName",
+                "userUpdateEmailAddress",
+                randomDateOfBirthGenerator());
+
+        defaultUserService.updateUser(userUpdate, 0);
+
+        assertNotEquals(userUpdate.getFirstName(), userList.get(0).getFirstName());
+        assertNotEquals(userUpdate.getLastName(), userList.get(0).getLastName());
+        assertNotEquals(userUpdate.getDateOfBirth(), userList.get(0).getDateOfBirth());
+        assertNotEquals(userUpdate.getEmailAddress(), userList.get(0).getEmailAddress());
     }
 
     @Test
-    void deleteUserById() {
+    void shouldDeleteUserByIdForValidRequest() {
+        int userId = 42;
+        defaultUserService.deleteUserById(userId);
+        verify(userProviderMock, times(1)).deleteUserById(eq(userId));
     }
 
     private List<User> createUsers() {
@@ -144,7 +155,7 @@ class DefaultUserServiceTest {
         return userList;
     }
 
-    private Date randomDateOfBirthGenerator(){
+    private Date randomDateOfBirthGenerator() {
         Random random = new Random();
         int minDay = (int) LocalDate.of(1900, 1, 1).toEpochDay();
         int maxDay = (int) LocalDate.of(2021, 1, 1).toEpochDay();

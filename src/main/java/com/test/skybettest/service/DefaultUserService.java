@@ -6,6 +6,7 @@ import com.test.skybettest.model.User;
 import com.test.skybettest.provider.UserProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -30,13 +31,15 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User findUserById(int id) {
-        User user;
-        try {
-            user = userProvider.findUserById(id);
-        } catch (UserNotFoundException unfe) {
+        User user = userProvider.findUserById(id);
+        if (isInValidUser(user)) {
             throw new UserNotFoundException(id);
         }
         return user;
+    }
+
+    private boolean isInValidUser(User user) {
+        return ObjectUtils.isEmpty(user);
     }
 
     @Override
@@ -51,10 +54,6 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void deleteUserById(int id) {
-        try {
-            userProvider.deleteUserById(id);
-        } catch (UserNotFoundException unfe) {
-            throw new UserNotFoundException(id);
-        }
+        userProvider.deleteUserById(id);
     }
 }

@@ -19,26 +19,26 @@ public class DefaultUserService implements UserService {
 
     @Override
     public List<User> findAllUsers() {
-        return null;
+        return userProvider.findAllUsers();
     }
 
     @Override
     public User findUserById(int id) {
-        return null;
+        return userProvider.findUserById(id);
     }
 
     @Override
     public User createUser(User user) {
-        return null;
+        return userProvider.createUser(user);
     }
 
     @Override
     public User updateUser(User user, int id) {
-        return null;
+        return userProvider.updateUser(user,id);
     }
 
     @Override
     public void deleteUserById(int id) {
-
+        userProvider.deleteUserById(id);
     }
 }

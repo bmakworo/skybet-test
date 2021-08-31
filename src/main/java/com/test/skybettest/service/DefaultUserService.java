@@ -1,5 +1,7 @@
 package com.test.skybettest.service;
 
+import com.test.skybettest.Exception.NoDataFoundException;
+import com.test.skybettest.Exception.UserNotFoundException;
 import com.test.skybettest.model.User;
 import com.test.skybettest.provider.UserProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,22 @@ public class DefaultUserService implements UserService {
 
     @Override
     public List<User> findAllUsers() {
-        return userProvider.findAllUsers();
+        List<User> users = userProvider.findAllUsers();
+        if(users.isEmpty()) {
+            throw new NoDataFoundException();
+        }
+        return users;
     }
 
     @Override
     public User findUserById(int id) {
-        return userProvider.findUserById(id);
+        User user = new User();
+        try {
+            user = userProvider.findUserById(id);
+        } catch (UserNotFoundException unfe) {
+            throw new UserNotFoundException(id);
+        }
+        return user;
     }
 
     @Override
@@ -39,6 +51,11 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void deleteUserById(int id) {
-        userProvider.deleteUserById(id);
+        User user = new User();
+        try {
+            userProvider.deleteUserById(id);
+        } catch (UserNotFoundException unfe) {
+            throw new UserNotFoundException(id);
+        }
     }
 }

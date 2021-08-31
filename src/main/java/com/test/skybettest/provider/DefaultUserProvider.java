@@ -1,14 +1,20 @@
 package com.test.skybettest.provider;
 
+import com.test.skybettest.Exception.UserNotFoundException;
 import com.test.skybettest.model.User;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class DefaultUserProvider implements UserProvider{
 
     private List<User> userList;
+
+    DefaultUserProvider(){
+        userList = new ArrayList<>();
+    }
 
     public List<User> findAllUsers() {
         return userList;
@@ -24,7 +30,13 @@ public class DefaultUserProvider implements UserProvider{
     }
 
     public User updateUser(User user, int id) {
-        return null;
+        User updatedUser = userList.get(id);
+        updatedUser.setFirstName(user.getFirstName());
+        updatedUser.setLastName(user.getLastName());
+        updatedUser.setEmailAddress(user.getEmailAddress());
+        updatedUser.setDateOfBirth(user.getDateOfBirth());
+
+        return updatedUser;
     }
 
     public void deleteUserById(int id) {

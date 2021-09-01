@@ -62,17 +62,13 @@ class DefaultUserServiceTest {
 
     @Test
     void shouldFindUserByIdForValidRequest() {
-        User user = new User(4,
-                "userFirstName",
-                "userLastName",
-                "userEmailAddress",
-                randomDateOfBirthGenerator());
-        int userId = user.getId();
-        when(userProviderMock.findUserById(userId)).thenReturn(user);
-        when(userProviderMock.findAllUsers()).thenReturn(Collections.singletonList(user));
+        List<User> userList = createUsers();
+        when(userProviderMock.findAllUsers()).thenReturn(Collections.unmodifiableList(userList));
 
+        final int userId = 2;
+        Optional<User> userFound = findUser(userList, 2);
         defaultUserService.findUserById(userId);
-        verify(userProviderMock, times(1)).findUserById(userId);
+        verify(userProviderMock, times(1)).findUserById(eq(userList.indexOf(userFound.get())));
     }
 
     @Test
@@ -135,19 +131,16 @@ class DefaultUserServiceTest {
     void shouldDeleteUserByIdForValidRequest() {
         List<User> userList = createUsers();
         when(userProviderMock.findAllUsers()).thenReturn(Collections.unmodifiableList(userList));
+
         final int userId = 2;
+        Optional<User> userFound = findUser(userList, 2);
         defaultUserService.deleteUserById(userId);
-        verify(userProviderMock, times(1)).deleteUserById(eq(userId));
+        verify(userProviderMock, times(1)).deleteUserById(eq(userList.indexOf(userFound.get())));
     }
 
-//    @Test
-//    void shouldThrowUserNotFoundExceptionForDeleteUserByIdForUnknownUserId() {
-//        List<User> userList = createUsers();
-//        when(userProviderMock.findAllUsers()).thenReturn(Collections.unmodifiableList(userList));
-//        final int userId = 42;
-//        defaultUserService.deleteUserById(userId);
-//        verify(userProviderMock, times(1)).deleteUserById(eq(userId));
-//    }
+    private final Optional<User> findUser(Collection<User> userList, int id) {
+        return userList.stream().filter(c -> c.getId() == id).findAny();
+    }
 
     private List<User> createUsers() {
         List<User> userList = new ArrayList<>();

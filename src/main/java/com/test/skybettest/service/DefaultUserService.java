@@ -43,10 +43,6 @@ public class DefaultUserService implements UserService {
         }
     }
 
-    private final Optional<User> findUser(Collection<User> userList, int id) {
-        return userList.stream().filter(c -> c.getId() == id).findAny();
-    }
-
     @Override
     public User createUser(User user) {
         return userProvider.createUser(user);
@@ -74,5 +70,9 @@ public class DefaultUserService implements UserService {
         } else {
             throw new UserNotFoundException(id);
         }
+    }
+
+    private final Optional<User> findUser(Collection<User> userList, int id) {
+        return userList.stream().filter(c -> c.getId() == id).findAny();
     }
 }

@@ -1,6 +1,7 @@
 package com.test.skybettest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test.skybettest.Exception.NoDataFoundException;
 import com.test.skybettest.model.User;
 import com.test.skybettest.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -40,7 +40,17 @@ class UserControllerTest {
         Mockito.when(mockUserService.findAllUsers()).thenReturn(
                 Collections.singletonList(new User(42, "firstDummyName", "lasttDummyName", "dummy@email.com", new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"))));
 
-        mockMvc.perform(get("/users", 1)
+        mockMvc.perform(get("/users")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldThrowExceptionNoUsersExist() throws Exception {
+        Mockito.when(mockUserService.findAllUsers()).thenThrow(NoDataFoundException.class);
+
+        mockMvc.perform(get("/users")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -63,11 +73,11 @@ class UserControllerTest {
 
     @Test
     void shouldCreateUserForValidRequest() throws Exception {
-        User user = new User(2, "firstName", "lastName", "email@mail.com",new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"));
+        User user = new User(2, "firstName", "lastName", "email@mail.com", new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"));
         Mockito.when(mockUserService.createUser(any(User.class))).thenReturn(user);
 
         mockMvc.perform(post("/user")
-                .content(asJsonString(new User(2, "firstName", "lastName", "email@mail.com",new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"))))
+                .content(asJsonString(user))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -79,12 +89,12 @@ class UserControllerTest {
 
     @Test
     void shouldUpdateUserForValidRequest() throws Exception {
-        User user = new User(2, "firstName2", "lastName2", "email2@email.com",new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"));
-        Mockito.when(mockUserService.updateUser(any(User.class),anyInt())).thenReturn(user);
+        User user = new User(2, "firstName2", "lastName2", "email2@email.com", new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"));
+        Mockito.when(mockUserService.updateUser(any(User.class), anyInt())).thenReturn(user);
 
         mockMvc.perform(put("/user/{id}", 2)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(asJsonString(new User(2, "firstName2", "lastName2", "email2@email.com",new SimpleDateFormat("dd/MM/yyyy").parse("15/04/1978"))))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(user))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(2)))

@@ -10,12 +10,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -72,12 +69,14 @@ class DefaultUserServiceTest {
                 randomDateOfBirthGenerator());
         int userId = user.getId();
         when(userProviderMock.findUserById(userId)).thenReturn(user);
+        when(userProviderMock.findAllUsers()).thenReturn(Collections.singletonList(user));
+
         defaultUserService.findUserById(userId);
         verify(userProviderMock, times(1)).findUserById(userId);
     }
 
     @Test
-    void shouldReturn404ForMissingIdForFindUserByIdValidRequest() {
+    void shouldThrowUserNotFoundExceptionForMissingIdForFindUserByIdValidRequest() {
         User user = new User(4,
                 "userFirstName",
                 "userLastName",
@@ -91,7 +90,7 @@ class DefaultUserServiceTest {
         );
 
         assertTrue(thrown.getMessage().contains("Could not find user 6"));
-        verify(userProviderMock, times(1)).findUserById(6);
+        verify(userProviderMock, never()).findUserById(6);
     }
 
     @Test
@@ -122,7 +121,9 @@ class DefaultUserServiceTest {
                 "userUpdateEmailAddress",
                 randomDateOfBirthGenerator());
 
-        defaultUserService.updateUser(userUpdate, 0);
+        when(userProviderMock.findAllUsers()).thenReturn(userList);
+
+        defaultUserService.updateUser(userUpdate, 2);
 
         assertNotEquals(userUpdate.getFirstName(), userList.get(0).getFirstName());
         assertNotEquals(userUpdate.getLastName(), userList.get(0).getLastName());
@@ -132,10 +133,21 @@ class DefaultUserServiceTest {
 
     @Test
     void shouldDeleteUserByIdForValidRequest() {
-        int userId = 42;
+        List<User> userList = createUsers();
+        when(userProviderMock.findAllUsers()).thenReturn(Collections.unmodifiableList(userList));
+        final int userId = 2;
         defaultUserService.deleteUserById(userId);
         verify(userProviderMock, times(1)).deleteUserById(eq(userId));
     }
+
+//    @Test
+//    void shouldThrowUserNotFoundExceptionForDeleteUserByIdForUnknownUserId() {
+//        List<User> userList = createUsers();
+//        when(userProviderMock.findAllUsers()).thenReturn(Collections.unmodifiableList(userList));
+//        final int userId = 42;
+//        defaultUserService.deleteUserById(userId);
+//        verify(userProviderMock, times(1)).deleteUserById(eq(userId));
+//    }
 
     private List<User> createUsers() {
         List<User> userList = new ArrayList<>();

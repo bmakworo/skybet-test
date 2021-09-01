@@ -6,9 +6,10 @@ import com.test.skybettest.model.User;
 import com.test.skybettest.provider.UserProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DefaultUserService implements UserService {
@@ -23,7 +24,7 @@ public class DefaultUserService implements UserService {
     @Override
     public List<User> findAllUsers() {
         List<User> users = userProvider.findAllUsers();
-        if(users.isEmpty()) {
+        if (users.isEmpty()) {
             throw new NoDataFoundException();
         }
         return users;
@@ -31,15 +32,19 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User findUserById(int id) {
-        User user = userProvider.findUserById(id);
-        if (isInValidUser(user)) {
+        List<User> allUsers = userProvider.findAllUsers();
+        Optional<User> userFound = findUser(allUsers, id);
+
+        if (userFound.isPresent()) {
+            User user = userProvider.findUserById(allUsers.indexOf(userFound.get()));
+            return user;
+        } else {
             throw new UserNotFoundException(id);
         }
-        return user;
     }
 
-    private boolean isInValidUser(User user) {
-        return ObjectUtils.isEmpty(user);
+    private final Optional<User> findUser(Collection<User> userList, int id) {
+        return userList.stream().filter(c -> c.getId() == id).findAny();
     }
 
     @Override
@@ -49,11 +54,25 @@ public class DefaultUserService implements UserService {
 
     @Override
     public User updateUser(User user, int id) {
-        return userProvider.updateUser(user,id);
+        List<User> allUsers = userProvider.findAllUsers();
+        Optional<User> userFound = findUser(allUsers, id);
+
+        if (userFound.isPresent()) {
+            return userProvider.updateUser(userFound.get(), user);
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 
     @Override
     public void deleteUserById(int id) {
-        userProvider.deleteUserById(id);
+        List<User> allUsers = userProvider.findAllUsers();
+        Optional<User> userFound = findUser(allUsers, id);
+
+        if (userFound.isPresent()) {
+            userProvider.deleteUserById(allUsers.indexOf(userFound.get()));
+        } else {
+            throw new UserNotFoundException(id);
+        }
     }
 }

@@ -28,14 +28,14 @@ public class DefaultUserProvider implements UserProvider{
         return user;
     }
 
-    public User updateUser(User user, int id) {
-        User updatedUser = userList.get(id);
-        updatedUser.setFirstName(user.getFirstName());
-        updatedUser.setLastName(user.getLastName());
-        updatedUser.setEmailAddress(user.getEmailAddress());
-        updatedUser.setDateOfBirth(user.getDateOfBirth());
+    public User updateUser(User user, User newUser) {
+        user.setId(newUser.getId());
+        user.setFirstName(newUser.getFirstName());
+        user.setLastName(newUser.getLastName());
+        user.setEmailAddress(newUser.getEmailAddress());
+        user.setDateOfBirth(newUser.getDateOfBirth());
 
-        return updatedUser;
+        return user;
     }
 
     public void deleteUserById(int id) {

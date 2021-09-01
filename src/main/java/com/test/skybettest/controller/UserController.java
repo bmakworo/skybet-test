@@ -22,7 +22,7 @@ public class UserController {
         return userService.findAllUsers();
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("/user/{id}")
     User retrieveUserById(@PathVariable int id){
         return userService.findUserById(id);
     }
@@ -37,7 +37,7 @@ public class UserController {
         return userService.updateUser(user, id);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/user/{id}")
     void deleteUser(@PathVariable int id) {
         userService.deleteUserById(id);
     }

@@ -12,7 +12,7 @@ public interface UserProvider {
 
     User createUser(User user);
 
-    User updateUser(User user, int id);
+    User updateUser(User oldUser, User newUser);
 
     void deleteUserById(int id);
 }

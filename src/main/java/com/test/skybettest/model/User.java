@@ -1,6 +1,7 @@
 package com.test.skybettest.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class User {
 
@@ -58,5 +59,29 @@ public class User {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && firstName.equals(user.firstName) && lastName.equals(user.lastName) && emailAddress.equals(user.emailAddress) && dateOfBirth.equals(user.dateOfBirth);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, emailAddress, dateOfBirth);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                '}';
     }
 }

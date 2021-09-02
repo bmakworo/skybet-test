@@ -1,4 +1,6 @@
 # Sky Bet Test ReadMe
+The application is a spring boot application that uses maven as a build tool. When the application is initialised it creates 
+three users that can be used to test the application.
 
 # Tools and frameworks used
 Maven
@@ -9,8 +11,6 @@ Spring boot
 
 I chose to use spring boot as it provides an easy way to write and implement RestFul APIs. It also provides additional tools such as
 dependency injection(that is widely used in the project).
-
-Docker
 
 # How to run the app
 1. Clone the spring boot application to a folder of choice
